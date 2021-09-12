@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>Python Flask Upload and display image</title>
+
+<style>
+.grid { 
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 20px;
+  align-items: stretch;
+  }
+.grid img {
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 6px 0px  rgba(0,0,0,0.3);
+  max-width: 100%;
+}
+</style>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />        
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</head>
+<body>
+<p><h1 align="center">Local Similarity Search</h1></p>
+<div class="container">
+<div class="row">
+    <h2>Select a file to upload</h2>
+    <p>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </p>
+    {% if img_data %}
+        <div>
+	    <img src="data:image/jpeg;base64, {{ img_data }}" width="200" height="200">
+        </div>
+    {% endif %}
+
+    <hr>
+    
+    <form method="post" action="/" enctype="multipart/form-data">
+        <dl>
+            <p>
+                <input type="file" name="file" class="form-control" autocomplete="off" required>
+            </p>
+        </dl>
+	<p>
+	    <input placeholder="Enter K" type="text" name="text" required><br>
+	</p>
+	<p>
+            <input type="submit" value="Submit" class="btn btn-info">
+        </p>
+    </form>
+
+    <h2>Similar Images</h2>
+    <div class="grid"> <!--"col-md-auto col-lg-3 col-md-4 col-xs-6 thumb">-->
+        {% for image in images  %}
+            <img src="data:image/jpeg;base64, {{ image }}" width="200" height="200">
+        {% endfor %}
+    </div>
+    <hr>
+
+</div>
+</div>
+
+</body>
+</html>
+
