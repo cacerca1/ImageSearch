@@ -3,13 +3,11 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 import json
+import base64
 
-import glob
 import os
 import numpy as np
 from PIL import Image
-import matplotlib.pyplot as plt
-import random
 
 def model_fn(model_dir):
     
@@ -18,7 +16,7 @@ def model_fn(model_dir):
 
     _ = model.eval()
 
-    modules=list(resnet50.children())[:-1]
+    modules=list(model.children())[:-1]
     model=nn.Sequential(*modules)
     for p in model.parameters():
         p.requires_grad = False
@@ -29,13 +27,25 @@ def model_fn(model_dir):
 
     return model
 
-def input_fn(request_body, request_content_type):
-    assert request_content_type=='application/json'
-    data = json.loads(request_body)['inputs']
-    data = torch.tensor(data, dtype=torch.float32, device=device)
-    return data
+def input_fn(request_body, request_content_type='application/json'):
+    if request_content_type =='application/json':
+        data = json.loads(request_body)
+        data = data['inputs']
+        
+        im_bytes = base64.b64decode(data)   # im_bytes is a binary image
+        im_file = BytesIO(im_bytes)  # convert image to file-like object
+        image = Image.open(im_file)   # img is now PIL Image object
+        im = np.asarray(image)# convert image to numpy array
+        
+        data = torch.tensor(im, dtype=torch.float32)#, device=device)
+        return data
+    raise Exception("Unsupported ContentType: %s", request_content_type)
 
 def predict_fn(input_object, model):
+    if torch.cuda.is_available():
+        input_object = input_object.cuda()
+    input_object = torch.unsqueeze(img, 0)
+
     with torch.no_grad():
         prediction = model(input_object)
     return prediction
