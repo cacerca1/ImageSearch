@@ -4,6 +4,7 @@ import torch.nn as nn
 import torchvision.models as models
 import json
 import base64
+from io import BytesIO
 
 import os
 import numpy as np
@@ -36,7 +37,7 @@ def input_fn(request_body, request_content_type='application/json'):
         im_file = BytesIO(im_bytes)  # convert image to file-like object
         image = Image.open(im_file)   # img is now PIL Image object
         im = np.asarray(image)# convert image to numpy array
-        
+        im = np.moveaxis(im, -1, 0) # transpose to channels first
         data = torch.tensor(im, dtype=torch.float32)#, device=device)
         return data
     raise Exception("Unsupported ContentType: %s", request_content_type)
@@ -44,7 +45,7 @@ def input_fn(request_body, request_content_type='application/json'):
 def predict_fn(input_object, model):
     if torch.cuda.is_available():
         input_object = input_object.cuda()
-    input_object = torch.unsqueeze(img, 0)
+    input_object = torch.unsqueeze(input_object, 0)
 
     with torch.no_grad():
         prediction = model(input_object)
