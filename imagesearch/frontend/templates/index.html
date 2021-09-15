@@ -60,7 +60,7 @@
     <h2>Similar Images</h2>
     <div class="grid"> <!--"col-md-auto col-lg-3 col-md-4 col-xs-6 thumb">-->
         {% for image in images  %}
-            <img src="data:image/jpeg;base64, {{ image }}" width="200" height="200">
+            <img src="{{ image }}" width="200" height="200">
         {% endfor %}
     </div>
     <hr>
@@ -71,3 +71,24 @@
 </body>
 </html>
 
+<!-- 
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Display images</title>
+  </head>
+  <body>
+    <div class="content">
+        <div>
+          <h3>Here are media files inside the S3 bucket:</h3>
+          <ul>
+            {% for item in contents %}
+              <li>
+                <img src={{ item }} style="width: 250px">
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+    </div>
+  </body>
+</html> -->

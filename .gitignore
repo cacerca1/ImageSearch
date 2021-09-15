@@ -1,4 +1,5 @@
-.ipynb_checkpoints*
+# .ipynb_checkpoints*
 *.pickle
 __pycache__/
-
+*.zip
+venv/
