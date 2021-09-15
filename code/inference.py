@@ -37,8 +37,12 @@ def input_fn(request_body, request_content_type='application/json'):
         im_file = BytesIO(im_bytes)  # convert image to file-like object
         image = Image.open(im_file)   # img is now PIL Image object
         im = np.asarray(image)# convert image to numpy array
+        
+        # replicate transforms.to_tensor
         im = np.moveaxis(im, -1, 0) # transpose to channels first
         data = torch.tensor(im, dtype=torch.float32)#, device=device)
+        data /= 255
+        
         return data
     raise Exception("Unsupported ContentType: %s", request_content_type)
 
