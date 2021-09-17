@@ -7,7 +7,7 @@ from PIL import Image
 import base64
 from io import BytesIO
 
-from ..models.endpoint import infer
+from ..models.endpoint import LambdaSearch
 
 app = Flask(__name__)
  
@@ -46,7 +46,7 @@ def upload_image():
         dec_img = enc_img.decode('utf-8')
         #print('upload_image filename: ' + filename)
         flash('Image successfully uploaded and displayed below')
-        return render_template('index.html', img_data=dec_img, images=infer(dec_img, k))
+        return render_template('index.html', img_data=dec_img, images=LambdaSearch().infer(dec_img, k))
         # return render_template('index.html', img_data=dec_img, images=infer(enc_img, k))
     else:
         flash('Allowed image types are - png, jpg, jpeg, gif')

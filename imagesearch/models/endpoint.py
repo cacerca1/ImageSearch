@@ -1,25 +1,34 @@
 
 import json
 import requests
+from .model import Extractor
 
 URL = 'https://or80tvm2cg.execute-api.us-east-1.amazonaws.com/test/search'
 
-def infer(enc_img, k):
-    """Infer using the AWS stack. 
+class LambdaSearch(ExtractorSearch):
 
-    Args:
-        enc_img (str): base64 encoded image
-        k (int): number of desired similar images.
+    def get_model(self):
+        pass
 
-    Returns:
-        list: list of similar images
-    """
+    def get_embedding(self, enc_img):
+        pass
 
-    params = {"k":k,"base64image": enc_img}
+    def infer(self, enc_img, k):
+        """Infer using the AWS stack. 
 
-    resp = requests.post(URL, data=json.dumps(params))
+        Args:
+            enc_img (str): base64 encoded image
+            k (int): number of desired similar images.
 
-    images = json.loads(resp.json()['body'])['images']
-    # images = resp.json()['images'] # for get method with params key
+        Returns:
+            list: list of similar images
+        """
 
-    return [x.replace('&','&amp;') for x in images]# why is the replace necessary?
+        params = {"k":k,"base64image": enc_img}
+
+        resp = requests.post(URL, data=json.dumps(params))
+
+        images = json.loads(resp.json()['body'])['images']
+        # images = resp.json()['images'] # for get method with params key
+
+        return [x.replace('&','&amp;') for x in images]# why is the replace necessary?

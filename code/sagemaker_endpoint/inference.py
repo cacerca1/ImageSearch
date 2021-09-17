@@ -12,7 +12,6 @@ from PIL import Image
 
 def model_fn(model_dir):
     
-    
     model = models.resnet50(pretrained=True)
 
     _ = model.eval()
