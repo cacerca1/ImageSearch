@@ -1,5 +1,9 @@
 import numpy as np
+from PIL import Image
 
+def open_image(filename):
+    image = Image.open(filename)   # img is now PIL Image object
+    return image
 
 def plot_confusion_matrix(cm,
                           target_names,

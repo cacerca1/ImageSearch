@@ -41,7 +41,7 @@ The final approach is a two step process. First, a classifier network is trained
 Various experiments were conductec with these three approaches to maximize the accuracy metric which tests the class of the retrieved image against the class of the query image. These experiments varied the feature extractor used, the use of feature scaling, the use of Principle Component Analysis (PCA) as a dimensionality reduction technique, as well as some augmentation techniques. The best results will be discussed in the next section. For a full list of all experiments, see the [Experiments] (#experiments) section.
 
 ## Model Comparison
-There are two main factors to take into account when evaluating model perfomrnace:
+There are two main factors to take into account when evaluating model performance:
 
 1. Model accuracy
 2. Speed
@@ -50,8 +50,8 @@ High accuracy will allow us to choose the best image for a given query, while lo
 #### Model Performance
 For the models described in the previous section, the accuracy for values of K ranging from 1-10 is as shown in the following figure. The result show that for the single step process, accuracy decreases as K is increased. While for the two step model, accuracy is pinned at the classifier accuracy. This is as expected since our metric of accuracy in this problem is whether the class of the predicted image matches the class of our query image.
 
-&nbsp; | ResNet50 <br /> 2048 | ResNet50 Triplet <br /> 256 | SVM + ResNet50 <br /> 2048 
---- | --- | --- | --- |--- 
+&nbsp; | ResNet50 <br /> 2048 | ResNet50 Triplet <br /> 256 | SVM + ResNet50 <br /> 2048 |
+--- | --- | --- | --- 
 1 | 0.938 | 0.936 | 0.951 |
 2 | 0.923 | 0.935 | 0.951 |
 3 | 0.914 | 0.932 | 0.951 |
@@ -67,8 +67,10 @@ For the models described in the previous section, the accuracy for values of K r
 Looking at runtime for the different models, we can that minimizing the search space reduces the runtime of the process. This can also be seen in the PCA number of components anlysis in the next table. 
 
 | ResNet50 <br /> 2048 | ResNet50 Triplet <br /> 256 | SVM + ResNet50 <br /> 2048 
-| --- | --- | --- |--- 
+ --- | --- | --- 
 0.04 | 0.226 | 0.119
+
+Taking these two factors into account shows a tradeoff to be made between accuracy and runtime. While the simplest model is the fastest, it also makes the most accuracy mistakes when considering higher values of K. On the other hand, the other two approaches which offer high accuracies also increase the runtime. 
 
 ## Experiments
 In each listing below, the first line defines the parameter of the experiment, while the second line shows the accuracy measuere with values of k ranging from 1 to 10. 

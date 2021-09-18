@@ -1,7 +1,7 @@
 
 import json
 import requests
-from .model import Extractor
+from .model import ExtractorSearch
 
 URL = 'https://or80tvm2cg.execute-api.us-east-1.amazonaws.com/test/search'
 

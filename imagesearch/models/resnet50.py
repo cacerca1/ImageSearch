@@ -1,27 +1,34 @@
 
-from PIL import Image
 import base64
 from io import BytesIO
 import numpy as np
 import pickle 
-
+import os
 import torch
 import torch.nn as nn
 import torchvision.models as models
 from torch.autograd import Variable
 from torchvision import transforms
 
-from .model import Extractor
+from .model import ExtractorSearch
+from ..utils import open_image
+from dotenv import load_dotenv
 
-KNNMODEL = '/home/ccaceresgarcia/Documents/Projects/image_search/ImageSearch/knnpickle_file.pickle'
-MODELWEIGHTS = '/home/ccaceresgarcia/Documents/Projects/image_search/resnet50-19c8e357.pth'
-FILENAMES = '/home/ccaceresgarcia/Documents/Projects/image_search/ImageSearch/filenames.pickle'
+load_dotenv()
+KNNMODEL = os.getenv('KNNMODEL')
+FILENAMES = os.getenv('FILENAMES')
 
 class Resnet50Search(ExtractorSearch):
     def get_model(self):
-        resnet50 = models.resnet50(pretrained=False)
+        failed = True
+        while failed:
+            try:
+                resnet50 = models.resnet50(pretrained=True)
+                failed = False
+            except:
+                pass
 
-        resnet50.load_state_dict(torch.load(MODELWEIGHTS)) # path of your weights
+        #resnet50.load_state_dict(torch.load(MODELWEIGHTS)) # path of your weights
 
         _ = resnet50.eval()
         _ = resnet50.cuda()
@@ -41,7 +48,7 @@ class Resnet50Search(ExtractorSearch):
         
         im_bytes = base64.b64decode(enc_img)   # im_bytes is a binary image
         im_file = BytesIO(im_bytes)  # convert image to file-like object
-        image = Image.open(im_file)   # img is now PIL Image object
+        image = open_image(im_file)
 
         self.get_model()
         
@@ -75,7 +82,7 @@ class Resnet50Search(ExtractorSearch):
             # load the image
             match = indices[0][i]
             print(loaded_filenames[match])
-            im = Image.open(loaded_filenames[match])
+            im = open_image(loaded_filenames[match])
 
             data = BytesIO()
             im.save(data, "JPEG")
