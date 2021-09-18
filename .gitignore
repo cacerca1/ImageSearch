@@ -6,3 +6,4 @@ venv/
 *.h5
 *.json
 data/
+*.env

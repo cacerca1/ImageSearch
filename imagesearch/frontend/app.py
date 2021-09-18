@@ -20,6 +20,14 @@ else:
     from imagesearch.models.endpoint import LambdaSearch
 
 def allowed_file(filename):
+    """Check whether the filename passed has one of the allowed extensions
+
+    Args:
+        filename (str): Filepath to check.
+
+    Returns:
+        bool: Whether the filepath has one of the allowed extensions.
+    """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
      
  

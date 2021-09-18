@@ -2,6 +2,14 @@ import numpy as np
 from PIL import Image
 
 def open_image(filename):
+    """Open an image using PIL.
+
+    Args:
+        filename (str): Path to file
+
+    Returns:
+        Image: PIl Image
+    """
     image = Image.open(filename)   # img is now PIL Image object
     return image
 

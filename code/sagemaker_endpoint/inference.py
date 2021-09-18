@@ -11,7 +11,8 @@ import numpy as np
 from PIL import Image
 
 def model_fn(model_dir):
-    
+    """Herlper function for sagemaker endpoint to get the model.
+    """
     model = models.resnet50(pretrained=True)
 
     _ = model.eval()
@@ -28,6 +29,8 @@ def model_fn(model_dir):
     return model
 
 def input_fn(request_body, request_content_type='application/json'):
+    """Helper function for sagemaker endpoint to process in input before passing it to the model for inference.
+    """
     if request_content_type =='application/json':
         data = json.loads(request_body)
         data = data['inputs']
@@ -46,6 +49,8 @@ def input_fn(request_body, request_content_type='application/json'):
     raise Exception("Unsupported ContentType: %s", request_content_type)
 
 def predict_fn(input_object, model):
+    """Helper function to predict on an image using the model
+    """
     if torch.cuda.is_available():
         input_object = input_object.cuda()
     input_object = torch.unsqueeze(input_object, 0)
@@ -55,6 +60,8 @@ def predict_fn(input_object, model):
     return prediction
 
 def output_fn(predictions, content_type):
+    """Helper function to process the predictions of the model before returning to the user.
+    """
     assert content_type == 'application/json'
     res = predictions.cpu().numpy().tolist()
     return json.dumps(res)
