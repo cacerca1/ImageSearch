@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  # make an api
+  ApiGateway:
+    Type: AWS:ApiGateway::RestApi
+    Properties:
+      Name: Image search api
+      Description: Rest api for image search service.
+
+  # POST method
+  ApiGatewayMethod:
+    Type: AWS:ApiGateway::Method
+    Properties:
+      HttpMethod: ANY
+      Integration:
+        IntegrationHttpMethod: POST
+      ResourceId: !GetAtt ApiGateway.RootResourceId
+      RestApiId: !Ref ApiGateway
+
+  # permission to invoke lambda
+  LambdaGatewayInvoke:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:INvokeFunction
+      FunctionName: !GetAtt LambdaFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*/*/
+
+  # Labda function to invode Sagemaker endpoint and Elastic search
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Runtime: python3.7
+      Handler: code/app.lambda_handler
+      Code:
+        S3Bucket: functions
+        S3Key: imagesearchlambda.zip
+      Timeout: 300
+      Environment:
+        Variables:
+          EMBEDDING_MODEL_ENDPOINT_NAME: !Ref SagemakerEndpoint
+          ES_ENDPOINT: !Ref ES_Domain
+          ES_USER: !Ref ES_User
+          ES_SECRET: !Ref ES_Secret
+          ES_INDEX: !Ref ES_Index
+
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: SearchRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts.AssumeRole
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunctionName}:*
+          PolicyName: lambda
+
+Parameters:
+  DataBucket:
+    Description: Name of bucket with image data.
+    Type: String
+  ES_Domain:
+    Description: Elasticsearch domain
+    Type: String
+  SagemakerEndpoint:
+    Description: Endpoint of sagemaker inference model
+    Type: String
+  LambdaFunctionName:
+    Type: String
+    Default: ImageSearch
+    AllowedPattern: ^[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+$
+  ES_User:
+    Type: String
+  ES_Secret:
+    Type: String
+  ES_Index: 
+    Type: String
