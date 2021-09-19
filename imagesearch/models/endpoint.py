@@ -1,9 +1,12 @@
 
 import json
 import requests
+import os
+from dotenv import load_dotenv
 from .model import ExtractorSearch
 
-URL = 'https://or80tvm2cg.execute-api.us-east-1.amazonaws.com/test/search'
+load_dotenv()
+URL = os.getenv('SAGEMAKER_ENDPOINT')
 
 class LambdaSearch(ExtractorSearch):
 
